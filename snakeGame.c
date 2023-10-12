@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <malloc.h>
 #include <stdlib.h>
+#include <windows.h>
 #include <time.h>
 #include <conio.h>
 
@@ -16,7 +17,7 @@ snake *head=NULL;
 snake *tail;
 
 int map[120][120];
-int score;
+int score,i,j,level;
 static int last_dir='w';
 
 int sizeX = 90; 
@@ -24,6 +25,8 @@ int sizeY = 20;
 int score = 0;
 int xFood = 4;
 int yFood = 10;
+
+char dir_snake = 'w';
 
 void createBody(int x, int y){
     /*
@@ -65,8 +68,8 @@ void createMap(){
     /*
         to create the map for the game 
     */
-	for (int i = 0; i < sizeY; i++){
-		for (int j = 0; j < sizeX; j++){
+	for (i = 0; i < sizeY; i++){
+		for (j = 0; j < sizeX; j++){
 			if (i == 0 || i == sizeY - 1 || j == 0 || j == sizeX - 1) 
 			        map[i][j] = 1;        // for the boarder
 			else{ 
@@ -96,8 +99,8 @@ void viewmap(){
 
     snake * p;
     // printf("viewing map \n");
-    for(int i=0;i<sizeY;i++){
-        for(int j=0;j<sizeX;j++){
+    for( i=0;i<sizeY;i++){
+        for( j=0;j<sizeX;j++){
             if(map[i][j]==1)
                 printf("#");
             else if(map[i][j]==0)
@@ -106,7 +109,7 @@ void viewmap(){
 
                 p=head;
                 if(i==p->y && j==p->x)
-                    printf("@");
+                    printf("*");
                 // printf("\n");
                 // while(p!=NULL){
                 // p=p->next;
@@ -129,18 +132,21 @@ void viewmap(){
 }
  
 
-// void viewmapskelton(){
-//     printf("viewing map \n");
-//     for(int i=0;i<sizeY;i++){
-//         for(int j=0;j<sizeX;j++){
-//             printf("%d",map[i][j]);
-//             // printf("%d",j);
-//         }
-//         printf("\n");
-//     }
-// }
+void gameOverScren(){
+    Sleep(2000);
+    system("cls");
+    printf("###################################################################################################################\n\n");
+    
+    printf("@@@@@@@@@@@@                               < < < SNAKE GAME  > > >                                       @@@@@@@@@@\n");
 
+    printf("\nGAME OVER...\n");
+    printf("\nYOUR SCORE IS :%d\n",score);
+    
+    
+    
 
+    printf("\n###################################################################################################################\n");
+}
 
 
 void run(int change_x, int change_y) {
@@ -162,6 +168,15 @@ void run(int change_x, int change_y) {
         printf("game over hit 1");
         printf("score %d",score);
         printf("\n");
+        gameOverScren();
+        exit(0);
+    }
+    if(map[head->y][head->x] == 2){         //check weather the snake head hit the boarder
+        printf("\n");
+        printf("game over hit 2 ");
+        printf("score %d",score);
+        printf("\n");
+        gameOverScren();
         exit(0);
     }
     if(head->x ==xFood && head->y == yFood){         //checks weather the snake head eats the food
@@ -184,62 +199,52 @@ void run(int change_x, int change_y) {
 }
 
 
-// void disp(){
-//     snake * p;
-//     if(head==NULL){
-//         printf("list is empty");
-//     }
-//     else{
-//         p=head;
-//         printf("\n");
-//         while(p!=NULL){
-//             printf("X=%d",p->x);
-//             printf("y=%d",p->y);
-//             printf("->");
-//             // printf("\n");
-//             p=p->next;
-//         }
-//         printf("\n");
-//     }
-// }
-
 void move(){
-    char dir_snake;
-    // scanf("%c",&dir_snake);
-
-    while (getchar() != '\n');
-    dir_snake = getchar();
-    
+    if (kbhit()){
+        dir_snake = getchar();
+    }
     switch(dir_snake){
         case 'w': if(last_dir!='s')
                     {run(0,-1);}       //will pass the value to run()
-                     // printf("up");
+                    
                 break;
         case 's': if(last_dir!='w')
                     {run(0,1);}
-                // printf("down");
+            
                 break;
         case 'a':if(last_dir!='d')
                     {run(-1,0);}
-                // printf("left");
+					    
                 break;
         case 'd': if(last_dir!='a')
                     {run(1,0);}
-                // printf("right");
+                
                 break;
         case 'q': exit(0);
         default:
+                Sleep(1000);
                 printf("enter the correct choise :\nup - w\ndown - s \nleft - a \nright -d\nquit -q\n"); 
+                dir_snake = getchar();
                 move();
     }
+    if (level == 3)
+    {
+        Sleep(100);
+    }
+    else if (level == 2)
+    {
+        Sleep(400);
+    }
+    else{
+        Sleep(650);
+    }
+    
     last_dir=dir_snake;
 }
 
 void play(){
     createMap();
     viewmap();
-    // viewmapskelton();
-    // disp();
     move();
 }
 
@@ -255,25 +260,38 @@ int froCover(){
     
     printf("\npress 1 for to start\nor\npress 2 to quit\n");
     
+    
+    printf("\n###################################################################################################################\n");
     printf("\nenter your choice 1/0 : ");
     scanf("%d",&ch);
 
-    printf("\n\t\t\t\t\t\t\t\t\t\t\t\tBY manu sankar u\n");
+    printf("enter the difficulty :\neasy - 1\nmedium - 2\nhard - 3\n");
+    scanf("%d",&level);
    
-    printf("\n###################################################################################################################\n");
+    
     return ch;
 }
 
-int main()
-{
+void menu(){
     int ch;
-    createBody(4, 4);
+    
 
     ch = froCover();
     do{
         system("cls");
         play();
     }while(ch==1);
+}
+
+
+
+
+
+
+int main()
+{
+    createBody(4, 4);
+    menu();
     return 0;
 }
 

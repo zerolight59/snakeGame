@@ -140,7 +140,7 @@ void gameOverScren(){
     printf("@@@@@@@@@@@@                               < < < SNAKE GAME  > > >                                       @@@@@@@@@@\n");
 
     printf("\nGAME OVER...\n");
-    printf("\nYOUR SCORE IS :%d\n",score);
+    printf("\nYOUR SCORE IS :  %d\n",score);
     
     
     
@@ -165,15 +165,15 @@ void run(int change_x, int change_y) {
 
     if(map[head->y][head->x] == 1){         //check weather the snake head hit the boarder
         printf("\n");
-        printf("game over hit 1");
+        printf("game over hit you hit boarder");
         printf("score %d",score);
         printf("\n");
         gameOverScren();
         exit(0);
     }
-    if(map[head->y][head->x] == 2){         //check weather the snake head hit the boarder
+    if(map[head->y][head->x] == 2){         //check weather the snake head hit the Snake
         printf("\n");
-        printf("game over hit 2 ");
+        printf("game over you hit snake ");
         printf("score %d",score);
         printf("\n");
         gameOverScren();
@@ -201,7 +201,7 @@ void run(int change_x, int change_y) {
 
 void move(){
     if (kbhit()){
-        dir_snake = getchar();
+        dir_snake = getch();
     }
     switch(dir_snake){
         case 'w': if(last_dir!='s')
@@ -222,10 +222,10 @@ void move(){
                 break;
         case 'q': exit(0);
         default:
-                Sleep(1000);
+                
                 printf("enter the correct choise :\nup - w\ndown - s \nleft - a \nright -d\nquit -q\n"); 
-                dir_snake = getchar();
-                move();
+                dir_snake = getch();
+
     }
     if (level == 3)
     {
@@ -262,10 +262,10 @@ int froCover(){
     
     
     printf("\n###################################################################################################################\n");
-    printf("\nenter your choice 1/0 : ");
+    printf("\nenter your choice 1/2 : ");
     scanf("%d",&ch);
 
-    printf("enter the difficulty :\neasy - 1\nmedium - 2\nhard - 3\n");
+    printf("\nenter the difficulty :\neasy - 1\nmedium - 2\nhard - 3\n");
     scanf("%d",&level);
    
     
@@ -283,7 +283,14 @@ void menu(){
     }while(ch==1);
 }
 
-
+void freeSnakeMemory() {
+    snake *current = head;
+    while (current != NULL) {
+        snake *temp = current;
+        current = current->next;
+        free(temp);
+    }
+}
 
 
 
@@ -292,6 +299,7 @@ int main()
 {
     createBody(4, 4);
     menu();
+    freeSnakeMemory();
     return 0;
 }
 

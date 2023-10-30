@@ -8,7 +8,7 @@
 struct node{
     int x;
     int y;
-    
+
     struct node *next;
 };
 
@@ -26,6 +26,11 @@ int score = 0;
 int xFood = 4;
 int yFood = 10;
 
+int xSFood = 6;
+int ySFood = 6;
+
+char foodDisplay='A';
+
 char dir_snake = 'w';
 
 void createBody(int x, int y){
@@ -36,6 +41,7 @@ void createBody(int x, int y){
 	snake *body = (snake *) malloc (sizeof(snake));    
 	body->x = x;
 	body->y = y;
+
 	if (head==NULL){
 		head = tail = body;
 	}
@@ -48,6 +54,13 @@ void createBody(int x, int y){
 	
 }
 
+char random_alphabets()    // For Displaying random quotes in the start of the program
+{   
+    srand(time(0));
+    int randomIndex = rand() % 26;
+    char randomAlphabet = 'A' + randomIndex;
+    return randomAlphabet;
+}
 void createFood(){
 
     /*
@@ -59,7 +72,23 @@ void createFood(){
 		xFood = rand() % (sizeX - 1) + 1;
 		yFood = rand() % (sizeY - 1) + 1;
 	} while (map[yFood][xFood] != 0);
+    foodDisplay =random_alphabets();
 	map[yFood][xFood] = 3; 
+}
+
+
+void createSuperFood(){
+
+    /*
+        to create a super food.when super food is eaten score is increased + 4
+    */
+	srand( time(NULL));
+	map[yFood][xFood] = 0;
+	do{
+		xSFood = rand() % (sizeX - 1) + 1;
+		ySFood = rand() % (sizeY - 1) + 1;
+	} while (map[ySFood][xSFood] != 0);
+	map[yFood][xFood] = 4; 
 }
 
 
@@ -89,6 +118,9 @@ void createMap(){
 		}
 	}
 	map[yFood][xFood] = 3;             //for the food
+    if(score%5==0 && score!=0){         //for super food
+        map[ySFood][xSFood] = 4;
+    }
 }
 
 void viewmap(){
@@ -120,7 +152,9 @@ void viewmap(){
             }
                 
             else if(map[i][j]==3)
-                printf("A");
+                printf("%c",foodDisplay);
+            else if(map[i][j]==4)
+                printf("@");
         }
         
         printf("\n");
@@ -128,6 +162,9 @@ void viewmap(){
     
     printf("\n");
     printf("score : %d",score);
+    printf("\n");
+    printf("\n");
+    printf("press w - a - s - d");
     printf("\n");
 }
  
@@ -186,6 +223,13 @@ void run(int change_x, int change_y) {
         createBody(xFood,yFood);
         createFood();
     }
+    if(head->x ==xSFood && head->y == ySFood && score%5==0){         //checks weather the snake head eats the Super food
+        printf("\n");
+        printf("eat Super food");
+        printf("\n");
+        score=score+4;
+        createSuperFood();
+    }
     // Traverse the rest of the snake and update coordinates
     while (t->next != NULL) {           
         t = t->next;
@@ -205,26 +249,27 @@ void move(){
     }
     switch(dir_snake){
         case 'w': if(last_dir!='s')
-                    {run(0,-1);}       //will pass the value to run()
+                    {run(0,-1);}       //will pass the value to run() to move up
                     
                 break;
-        case 's': if(last_dir!='w')
+        case 's': if(last_dir!='w')     //will pass the value to run() to move udown
                     {run(0,1);}
             
                 break;
-        case 'a':if(last_dir!='d')
+        case 'a':if(last_dir!='d')      //will pass the value to run() to move left
                     {run(-1,0);}
 					    
                 break;
-        case 'd': if(last_dir!='a')
+        case 'd': if(last_dir!='a')     //will pass the value to run() to move right
                     {run(1,0);}
                 
                 break;
-        case 'q': exit(0);
+        case 'q': exit(0);              //quit
         default:
                 
                 printf("enter the correct choise :\nup - w\ndown - s \nleft - a \nright -d\nquit -q\n"); 
                 dir_snake = getch();
+                move();
 
     }
     if (level == 3)
@@ -247,8 +292,6 @@ void play(){
     viewmap();
     move();
 }
-
-
 int froCover(){
     int ch;
     printf("###################################################################################################################\n\n");
@@ -257,21 +300,17 @@ int froCover(){
 
     printf("\ninstructions\n");
     printf("\nup    -> w \ndown  -> s\nleft  -> a\nright -> d\nquit  -> q\n");
-    
+
     printf("\npress 1 for to start\nor\npress 2 to quit\n");
-    
-    
     printf("\n###################################################################################################################\n");
     printf("\nenter your choice 1/2 : ");
     scanf("%d",&ch);
-
     printf("\nenter the difficulty :\neasy - 1\nmedium - 2\nhard - 3\n");
     scanf("%d",&level);
    
     
     return ch;
 }
-
 void menu(){
     int ch;
     
@@ -282,7 +321,6 @@ void menu(){
         play();
     }while(ch==1);
 }
-
 void freeSnakeMemory() {
     snake *current = head;
     while (current != NULL) {
@@ -291,10 +329,6 @@ void freeSnakeMemory() {
         free(temp);
     }
 }
-
-
-
-
 int main()
 {
     createBody(4, 4);
@@ -302,7 +336,6 @@ int main()
     freeSnakeMemory();
     return 0;
 }
-
 
 
 
